@@ -149,13 +149,23 @@ const sendEmail = async ({ to, subject, html, attachments, resendHtml }) => {
         command: err?.command,
       });
 
-      if (isNetworkTimeout(err) && process.env.RESEND_API_KEY) {
-        const resendPayload = await sendViaResend({
-          to,
-          subject,
-          html: resendHtml || html,
-        });
-        return { provider: "resend", info: resendPayload };
+      if (isNetworkTimeout(err)) {
+        if (process.env.RESEND_API_KEY) {
+          const resendPayload = await sendViaResend({
+            to,
+            subject,
+            html: resendHtml || html,
+          });
+          return { provider: "resend", info: resendPayload };
+        }
+
+        const hint =
+          "SMTP connection timed out (hosting likely blocks Gmail SMTP). " +
+          "Configure RESEND_API_KEY (+ RESEND_FROM) on Render to send email via HTTPS.";
+        const e = new Error(hint);
+        e.code = "SMTP_TIMEOUT";
+        e.cause = err;
+        throw e;
       }
 
       throw err;
