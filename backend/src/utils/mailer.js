@@ -151,6 +151,7 @@ const sendEmail = async ({ to, subject, html, attachments, resendHtml }) => {
 
       if (isNetworkTimeout(err)) {
         if (process.env.RESEND_API_KEY) {
+          console.log("Falling back to Resend due to SMTP timeout");
           const resendPayload = await sendViaResend({
             to,
             subject,

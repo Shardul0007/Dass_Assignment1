@@ -14,6 +14,14 @@ const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT;
 
+// Log email provider configuration (no secrets)
+console.log("Email config:", {
+  hasSmtpUser: Boolean(process.env.SMTP_USER || process.env.EMAIL_USER),
+  hasSmtpPass: Boolean(process.env.SMTP_PASS || process.env.EMAIL_PASS),
+  hasResendKey: Boolean(process.env.RESEND_API_KEY),
+  resendFrom: process.env.RESEND_FROM || null,
+});
+
 // Increase JSON body limit for base64 images
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
@@ -75,6 +83,14 @@ app.get("/api/version", (req, res) => {
     service: process.env.RENDER_SERVICE_NAME || null,
     time: new Date().toISOString(),
     corsOrigins: Array.from(explicitAllowedOrigins),
+    email: {
+      smtpConfigured: Boolean(
+        (process.env.SMTP_USER || process.env.EMAIL_USER) &&
+          (process.env.SMTP_PASS || process.env.EMAIL_PASS),
+      ),
+      resendConfigured: Boolean(process.env.RESEND_API_KEY),
+      resendFrom: process.env.RESEND_FROM || null,
+    },
   });
 });
 
