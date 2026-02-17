@@ -4,7 +4,8 @@ const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    // Gmail "App Password" is often displayed with spaces; nodemailer expects it without.
+    pass: String(process.env.EMAIL_PASS || "").replace(/\s+/g, ""),
   },
 });
 

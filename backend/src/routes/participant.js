@@ -156,13 +156,20 @@ router.post(
       });
       await ticket.save();
 
-      await sendTicketEmail(user.email, ticketId, qrBase64, {
-        eventName: check_event.name,
-        participantName:
-          `${user?.first_name || ""} ${user?.last_name || ""}`.trim(),
-        participantEmail: user.email,
-      });
-      res.status(201).json({ message: "Registered for event successfully" });
+      try {
+        await sendTicketEmail(user.email, ticketId, qrBase64, {
+          eventName: check_event.name,
+          participantName:
+            `${user?.first_name || ""} ${user?.last_name || ""}`.trim(),
+          participantEmail: user.email,
+        });
+      } catch (emailErr) {
+        console.log("Ticket email failed:", emailErr?.message || emailErr);
+      }
+
+      res
+        .status(201)
+        .json({ message: "Registered for event successfully", ticketId });
     } catch (err) {
       console.log(err);
       res.status(500).json({ message: "Internal Server Error" });
@@ -289,12 +296,16 @@ router.post(
       });
       await ticket.save();
 
-      await sendTicketEmail(user.email, ticketId, qrBase64, {
-        eventName: updated.name,
-        participantName:
-          `${user?.first_name || ""} ${user?.last_name || ""}`.trim(),
-        participantEmail: user.email,
-      });
+      try {
+        await sendTicketEmail(user.email, ticketId, qrBase64, {
+          eventName: updated.name,
+          participantName:
+            `${user?.first_name || ""} ${user?.last_name || ""}`.trim(),
+          participantEmail: user.email,
+        });
+      } catch (emailErr) {
+        console.log("Ticket email failed:", emailErr?.message || emailErr);
+      }
 
       res.status(201).json({ message: "Purchase successful", ticketId });
     } catch (err) {

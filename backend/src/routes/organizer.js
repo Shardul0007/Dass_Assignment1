@@ -1058,12 +1058,16 @@ router.patch(
       await ticket.save();
 
       // Send confirmation email
-      await sendTicketEmail(user.email, ticketId, qrBase64, {
-        eventName: updated.name,
-        participantName:
-          `${user?.first_name || ""} ${user?.last_name || ""}`.trim(),
-        participantEmail: user.email,
-      });
+      try {
+        await sendTicketEmail(user.email, ticketId, qrBase64, {
+          eventName: updated.name,
+          participantName:
+            `${user?.first_name || ""} ${user?.last_name || ""}`.trim(),
+          participantEmail: user.email,
+        });
+      } catch (emailErr) {
+        console.log("Ticket email failed:", emailErr?.message || emailErr);
+      }
 
       res.status(200).json({
         message: "Order approved. Ticket sent to participant.",
