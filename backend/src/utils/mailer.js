@@ -70,7 +70,7 @@ const transporter = nodemailer.createTransport({
   }
 })();
 
-const sendViaResend = async ({ to, subject, html }) => {
+const sendViaResend = async ({ to, subject, html, attachments }) => {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) throw new Error("RESEND_API_KEY not set");
 
@@ -88,6 +88,7 @@ const sendViaResend = async ({ to, subject, html }) => {
       to: Array.isArray(to) ? to : [to],
       subject,
       html,
+      ...(attachments && attachments.length ? { attachments } : {}),
     }),
   });
 
@@ -127,6 +128,15 @@ const isNetworkTimeout = (err) => {
 const sendEmail = async ({ to, subject, html, attachments, resendHtml }) => {
   const from = getFromAddress();
 
+  const resendAttachments = Array.isArray(attachments)
+    ? attachments
+        .filter((a) => a && a.filename && a.content)
+        .map((a) => ({
+          filename: a.filename,
+          content: a.content,
+        }))
+    : undefined;
+
   if (smtpConfig.auth) {
     try {
       const info = await transporter.sendMail({
@@ -156,6 +166,7 @@ const sendEmail = async ({ to, subject, html, attachments, resendHtml }) => {
             to,
             subject,
             html: resendHtml || html,
+            attachments: resendAttachments,
           });
           return { provider: "resend", info: resendPayload };
         }
@@ -178,6 +189,7 @@ const sendEmail = async ({ to, subject, html, attachments, resendHtml }) => {
       to,
       subject,
       html: resendHtml || html,
+      attachments: resendAttachments,
     });
     return { provider: "resend", info: resendPayload };
   }

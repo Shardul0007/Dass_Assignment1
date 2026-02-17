@@ -33,7 +33,7 @@ async function sendTicketEmail(toEmail, ticketId, qrBase64, details = {}) {
     ${participantEmail ? `<p><b>Email:</b> ${participantEmail}</p>` : ""}
     <p><b>Ticket ID:</b> ${ticketId}</p>
     <p><b>QR Code:</b></p>
-    <img alt="QR" src="${qrBase64}" style="max-width: 280px; height: auto;"/>
+    <p>Your QR code is attached as <b>ticket-qr.png</b>.</p>
     <hr/>
     <p>If the QR image is blocked, use this Ticket ID at the venue.</p>
   `;
