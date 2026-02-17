@@ -21,7 +21,11 @@ app.use(express.urlencoded({ limit: "10mb", extended: true }));
 const cors = require("cors");
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
+    origin: [
+      "http://localhost:3000",
+      "http://127.0.0.1:3000",
+      "https://dass-frontend.onrender.com",
+    ],
     credentials: true,
   }),
 );
@@ -29,7 +33,11 @@ app.use(
 // Socket.IO for real-time chat
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
+    origin: [
+      "http://localhost:3000",
+      "http://127.0.0.1:3000",
+      "https://dass-frontend.onrender.com",
+    ],
     methods: ["GET", "POST"],
     credentials: true,
   },
