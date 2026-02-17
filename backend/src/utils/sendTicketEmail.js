@@ -1,13 +1,4 @@
-const nodemailer = require("nodemailer");
-
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    // Gmail "App Password" is often displayed with spaces; nodemailer expects it without.
-    pass: String(process.env.EMAIL_PASS || "").replace(/\s+/g, ""),
-  },
-});
+const { sendEmail } = require("./mailer");
 
 async function sendTicketEmail(toEmail, ticketId, qrBase64, details = {}) {
   if (!toEmail) throw new Error("Recipient email missing");
@@ -20,27 +11,45 @@ async function sendTicketEmail(toEmail, ticketId, qrBase64, details = {}) {
     ? String(details.participantEmail)
     : "";
 
-  await transporter.sendMail({
-    from: `"Felicity Events" <${process.env.EMAIL_USER}>`,
-    to: toEmail,
-    subject: "Your Event Ticket",
-    html: `
+  const subject = "Your Event Ticket";
+
+  // Keep CID attachment for SMTP, but embed base64 image too so HTTPS providers work.
+  const html = `
     <h2>Registration Successful</h2>
     ${eventName ? `<p><b>Event:</b> ${eventName}</p>` : ""}
     ${participantName ? `<p><b>Participant:</b> ${participantName}</p>` : ""}
     ${participantEmail ? `<p><b>Email:</b> ${participantEmail}</p>` : ""}
     <p><b>Ticket ID:</b> ${ticketId}</p>
-    <img src="cid:qr-code"/>
+    <p><b>QR Code:</b></p>
+    <img alt="QR" src="cid:qr-code"/>
+    <hr/>
+    <p>If the QR image is blocked, use this Ticket ID at the venue.</p>
   `,
-    attachments: [
+  const attachments = [
       {
         filename: "ticket-qr.png",
         content: qrBase64.split("base64,")[1],
         encoding: "base64",
         cid: "qr-code",
       },
-    ],
+  ];
+
+  const { provider, info } = await sendEmail({
+    to: toEmail,
+    subject,
+    html,
+    attachments,
   });
+
+  console.log("Ticket email sent:", {
+    to: toEmail,
+    ticketId,
+    provider,
+    messageId: info?.messageId,
+    response: info?.response,
+  });
+
+  return info;
 }
 
 module.exports = sendTicketEmail;

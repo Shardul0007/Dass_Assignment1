@@ -1,21 +1,16 @@
-const nodemailer = require("nodemailer");
-
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    // Gmail "App Password" is often displayed with spaces; nodemailer expects it without.
-    pass: String(process.env.EMAIL_PASS || "").replace(/\s+/g, ""),
-  },
-});
+const { sendEmail } = require("./mailer");
 
 const sendPasswordResetEmail = async ({ to, subject, html }) => {
-  await transporter.sendMail({
-    from: `"Felicity Events" <${process.env.EMAIL_USER}>`,
+  const { provider, info } = await sendEmail({ to, subject, html });
+
+  console.log("Password reset email sent:", {
     to,
-    subject,
-    html,
+    provider,
+    messageId: info?.messageId,
+    response: info?.response,
   });
+
+  return info;
 };
 
 module.exports = {
