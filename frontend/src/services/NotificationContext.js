@@ -4,7 +4,7 @@ import { api_requests } from "./api";
 
 const NotificationContext = createContext();
 
-const SOCKET_URL = "http://localhost:3500";
+const SOCKET_URL = process.env.REACT_APP_API_BASE || "http://localhost:3500";
 
 export function NotificationProvider({ children }) {
   const [notifications, setNotifications] = useState([]);

@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
 import Navbar from "../services/NavBar";
 import { api_requests } from "../services/api";
 
-const SOCKET_URL = "http://localhost:3500";
+const SOCKET_URL = process.env.REACT_APP_API_BASE || "http://localhost:3500";
 
 function EventDiscussion() {
   const { id } = useParams();
