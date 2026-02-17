@@ -19,13 +19,38 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
 const cors = require("cors");
+
+const parseCorsOrigins = (v) =>
+  String(v || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+const explicitAllowedOrigins = new Set([
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+  ...parseCorsOrigins(process.env.CORS_ORIGINS),
+]);
+
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true; // non-browser clients
+  if (explicitAllowedOrigins.has(origin)) return true;
+
+  // Allow Render hosted frontends (subdomains)
+  try {
+    const u = new URL(origin);
+    if (u.protocol === "https:" && u.hostname.endsWith(".onrender.com")) {
+      return true;
+    }
+  } catch {
+    // ignore invalid origin
+  }
+  return false;
+};
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "http://127.0.0.1:3000",
-      "https://dass-frontend.onrender.com",
-    ],
+    origin: (origin, cb) => cb(null, isAllowedOrigin(origin)),
     credentials: true,
   }),
 );
@@ -33,14 +58,24 @@ app.use(
 // Socket.IO for real-time chat
 const io = new Server(server, {
   cors: {
-    origin: [
-      "http://localhost:3000",
-      "http://127.0.0.1:3000",
-      "https://dass-frontend.onrender.com",
-    ],
+    origin: (origin, cb) => cb(null, isAllowedOrigin(origin)),
     methods: ["GET", "POST"],
     credentials: true,
   },
+});
+
+// Deployment/debug helper to confirm the running version on Render
+app.get("/api/version", (req, res) => {
+  res.status(200).json({
+    commit:
+      process.env.RENDER_GIT_COMMIT ||
+      process.env.GIT_COMMIT ||
+      process.env.COMMIT_SHA ||
+      null,
+    service: process.env.RENDER_SERVICE_NAME || null,
+    time: new Date().toISOString(),
+    corsOrigins: Array.from(explicitAllowedOrigins),
+  });
 });
 
 // Store io instance for use in routes
