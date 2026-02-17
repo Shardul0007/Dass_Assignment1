@@ -124,7 +124,7 @@ const isNetworkTimeout = (err) => {
   );
 };
 
-const sendEmail = async ({ to, subject, html, attachments }) => {
+const sendEmail = async ({ to, subject, html, attachments, resendHtml }) => {
   const from = getFromAddress();
 
   if (smtpConfig.auth) {
@@ -150,7 +150,11 @@ const sendEmail = async ({ to, subject, html, attachments }) => {
       });
 
       if (isNetworkTimeout(err) && process.env.RESEND_API_KEY) {
-        const resendPayload = await sendViaResend({ to, subject, html });
+        const resendPayload = await sendViaResend({
+          to,
+          subject,
+          html: resendHtml || html,
+        });
         return { provider: "resend", info: resendPayload };
       }
 
@@ -159,7 +163,11 @@ const sendEmail = async ({ to, subject, html, attachments }) => {
   }
 
   if (process.env.RESEND_API_KEY) {
-    const resendPayload = await sendViaResend({ to, subject, html });
+    const resendPayload = await sendViaResend({
+      to,
+      subject,
+      html: resendHtml || html,
+    });
     return { provider: "resend", info: resendPayload };
   }
 

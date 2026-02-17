@@ -13,8 +13,8 @@ async function sendTicketEmail(toEmail, ticketId, qrBase64, details = {}) {
 
   const subject = "Your Event Ticket";
 
-  // Keep CID attachment for SMTP, but embed base64 image too so HTTPS providers work.
-  const html = `
+  // SMTP clients work best with CID attachments; HTTPS email providers work best with data-URIs.
+  const smtpHtml = `
     <h2>Registration Successful</h2>
     ${eventName ? `<p><b>Event:</b> ${eventName}</p>` : ""}
     ${participantName ? `<p><b>Participant:</b> ${participantName}</p>` : ""}
@@ -22,6 +22,18 @@ async function sendTicketEmail(toEmail, ticketId, qrBase64, details = {}) {
     <p><b>Ticket ID:</b> ${ticketId}</p>
     <p><b>QR Code:</b></p>
     <img alt="QR" src="cid:qr-code"/>
+    <hr/>
+    <p>If the QR image is blocked, use this Ticket ID at the venue.</p>
+  `;
+
+  const resendHtml = `
+    <h2>Registration Successful</h2>
+    ${eventName ? `<p><b>Event:</b> ${eventName}</p>` : ""}
+    ${participantName ? `<p><b>Participant:</b> ${participantName}</p>` : ""}
+    ${participantEmail ? `<p><b>Email:</b> ${participantEmail}</p>` : ""}
+    <p><b>Ticket ID:</b> ${ticketId}</p>
+    <p><b>QR Code:</b></p>
+    <img alt="QR" src="${qrBase64}" style="max-width: 280px; height: auto;"/>
     <hr/>
     <p>If the QR image is blocked, use this Ticket ID at the venue.</p>
   `;
@@ -38,8 +50,9 @@ async function sendTicketEmail(toEmail, ticketId, qrBase64, details = {}) {
   const { provider, info } = await sendEmail({
     to: toEmail,
     subject,
-    html,
+    html: smtpHtml,
     attachments,
+    resendHtml,
   });
 
   console.log("Ticket email sent:", {
