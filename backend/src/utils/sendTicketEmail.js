@@ -24,14 +24,15 @@ async function sendTicketEmail(toEmail, ticketId, qrBase64, details = {}) {
     <img alt="QR" src="cid:qr-code"/>
     <hr/>
     <p>If the QR image is blocked, use this Ticket ID at the venue.</p>
-  `,
+  `;
+
   const attachments = [
-      {
-        filename: "ticket-qr.png",
-        content: qrBase64.split("base64,")[1],
-        encoding: "base64",
-        cid: "qr-code",
-      },
+    {
+      filename: "ticket-qr.png",
+      content: qrBase64.split("base64,")[1],
+      encoding: "base64",
+      cid: "qr-code",
+    },
   ];
 
   const { provider, info } = await sendEmail({
