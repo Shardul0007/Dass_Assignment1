@@ -2,9 +2,14 @@ const nodemailer = require("nodemailer");
 
 const bool = (v) => String(v || "").toLowerCase() === "true";
 
+const preferResend = () =>
+  bool(process.env.PREFER_RESEND) || bool(process.env.EMAIL_PREFER_RESEND);
+
 const getFromAddress = () =>
   process.env.EMAIL_FROM ||
-  (process.env.EMAIL_USER ? `"Felicity Events" <${process.env.EMAIL_USER}>` : undefined);
+  (process.env.EMAIL_USER
+    ? `"Felicity Events" <${process.env.EMAIL_USER}>`
+    : undefined);
 
 const getSmtpConfig = () => {
   const host = process.env.SMTP_HOST || "smtp.gmail.com";
@@ -46,7 +51,9 @@ const transporter = nodemailer.createTransport({
 (async () => {
   try {
     if (!smtpConfig.auth) {
-      console.log("SMTP not configured (missing SMTP_USER/SMTP_PASS or EMAIL_USER/EMAIL_PASS)");
+      console.log(
+        "SMTP not configured (missing SMTP_USER/SMTP_PASS or EMAIL_USER/EMAIL_PASS)",
+      );
       return;
     }
     await transporter.verify();
@@ -75,7 +82,8 @@ const sendViaResend = async ({ to, subject, html, attachments }) => {
   if (!apiKey) throw new Error("RESEND_API_KEY not set");
 
   const from = process.env.RESEND_FROM || getFromAddress();
-  if (!from) throw new Error("Missing from address (set EMAIL_USER or RESEND_FROM)");
+  if (!from)
+    throw new Error("Missing from address (set EMAIL_USER or RESEND_FROM)");
 
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -101,7 +109,8 @@ const sendViaResend = async ({ to, subject, html, attachments }) => {
   }
 
   if (!res.ok) {
-    const msg = payload?.message || payload?.error || payloadText || "Resend error";
+    const msg =
+      payload?.message || payload?.error || payloadText || "Resend error";
     const e = new Error(String(msg));
     e.status = res.status;
     e.payload = payload;
@@ -136,6 +145,25 @@ const sendEmail = async ({ to, subject, html, attachments, resendHtml }) => {
           content: a.content,
         }))
     : undefined;
+
+  // If configured, prefer Resend (HTTPS) to avoid SMTP blocks/timeouts on hosted platforms.
+  if (preferResend() && process.env.RESEND_API_KEY) {
+    try {
+      const resendPayload = await sendViaResend({
+        to,
+        subject,
+        html: resendHtml || html,
+        attachments: resendAttachments,
+      });
+      return { provider: "resend", info: resendPayload };
+    } catch (err) {
+      console.log("Resend send failed (will try SMTP if configured):", {
+        message: err?.message,
+        status: err?.status,
+      });
+      // fall through to SMTP if available
+    }
+  }
 
   if (smtpConfig.auth) {
     try {
