@@ -172,12 +172,35 @@ function QRScanner() {
   const exportCSV = async () => {
     try {
       const token = localStorage.getItem("token");
+      const base = String(
+        process.env.REACT_APP_API_BASE || "http://localhost:3500",
+      ).replace(/\/+$/, "");
       const response = await fetch(
-        `${process.env.REACT_APP_API_BASE || "http://localhost:3500"}/api/organizer/event/${id}/attendance-csv`,
+        `${base}/api/organizer/event/${id}/attendance-csv`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
       );
+
+      if (!response.ok) {
+        const contentType = response.headers.get("content-type") || "";
+        let msg = response.statusText || "Failed to export CSV";
+        try {
+          if (contentType.includes("application/json")) {
+            const data = await response.json();
+            msg = data?.message || msg;
+          } else {
+            const text = await response.text();
+            if (text && text.toLowerCase().includes("cannot get")) {
+              msg = "CSV endpoint not reached. Check REACT_APP_API_BASE (no trailing slash)";
+            }
+          }
+        } catch {
+          // ignore
+        }
+        throw new Error(msg);
+      }
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -186,7 +209,7 @@ function QRScanner() {
       a.click();
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      alert("Failed to export CSV");
+      alert(err?.message || "Failed to export CSV");
     }
   };
 

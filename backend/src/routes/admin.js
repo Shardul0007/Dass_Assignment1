@@ -284,19 +284,36 @@ router.patch(
       request.handled_at = new Date();
       await request.save();
 
-      await sendPasswordResetEmail({
-        to: request.organizer.email,
-        subject: "Password Reset Approved",
-        html: `
+      let emailSent = false;
+      try {
+        await sendPasswordResetEmail({
+          to: request.organizer.email,
+          subject: "Password Reset Approved",
+          html: `
               <h2>Password Reset Approved</h2>
               <p>Your organizer account password has been reset by Admin.</p>
               <p><b>New Password:</b> ${rawPassword}</p>
             `,
-      });
+        });
+        emailSent = true;
+      } catch (emailErr) {
+        console.log("Password reset approval email failed:", {
+          message: emailErr?.message,
+          code: emailErr?.code,
+          response: emailErr?.response,
+          responseCode: emailErr?.responseCode,
+        });
+      }
 
       res
         .status(200)
-        .json({ message: "Approved and emailed", password: rawPassword });
+        .json({
+          message: emailSent
+            ? "Approved and emailed"
+            : "Approved (email failed to send)",
+          password: rawPassword,
+          emailSent,
+        });
     } catch (err) {
       console.log(err);
       res.status(500).json({ message: "Internal Server Error" });
@@ -324,17 +341,33 @@ router.patch(
       request.handled_at = new Date();
       await request.save();
 
-      await sendPasswordResetEmail({
-        to: request.organizer.email,
-        subject: "Password Reset Rejected",
-        html: `
+      let emailSent = false;
+      try {
+        await sendPasswordResetEmail({
+          to: request.organizer.email,
+          subject: "Password Reset Rejected",
+          html: `
               <h2>Password Reset Rejected</h2>
               <p>Your password reset request was rejected by Admin.</p>
               <p>If you think this is a mistake, contact the admin team.</p>
             `,
-      });
+        });
+        emailSent = true;
+      } catch (emailErr) {
+        console.log("Password reset rejection email failed:", {
+          message: emailErr?.message,
+          code: emailErr?.code,
+          response: emailErr?.response,
+          responseCode: emailErr?.responseCode,
+        });
+      }
 
-      res.status(200).json({ message: "Rejected and emailed" });
+      res.status(200).json({
+        message: emailSent
+          ? "Rejected and emailed"
+          : "Rejected (email failed to send)",
+        emailSent,
+      });
     } catch (err) {
       console.log(err);
       res.status(500).json({ message: "Internal Server Error" });
