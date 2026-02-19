@@ -53,8 +53,6 @@
 
 ---
 
-## Advanced Features Implemented (Part 2 - 30 Marks)
-
 ### Feature Selection Justification
 
 I selected features that **build upon each other** and the existing base features:
@@ -67,9 +65,7 @@ I selected features that **build upon each other** and the existing base feature
 
 ---
 
-### Tier A Features (2 × 8 = 16 Marks)
-
-#### 1. QR Code Based Attendance Marking with Manual Overrides [8 Marks]
+#### 1. QR Code Based Attendance Marking with Manual Overrides
 
 **Location:**
 
@@ -100,7 +96,7 @@ I selected features that **build upon each other** and the existing base feature
 
 ---
 
-#### 2. Merchandise Payment Approval Workflow for Organizers [8 Marks]
+#### 2. Merchandise Payment Approval Workflow for Organizers
 
 **Location:**
 
@@ -136,9 +132,7 @@ I selected features that **build upon each other** and the existing base feature
 
 ---
 
-### Tier B Features (2 × 6 = 12 Marks)
-
-#### 3. Organizer Password Reset Workflow [6 Marks]
+#### 3. Organizer Password Reset Workflow
 
 **Location:**
 
@@ -174,7 +168,7 @@ I selected features that **build upon each other** and the existing base feature
 
 ---
 
-#### 4. Real-Time Discussion Forum for Events [6 Marks]
+#### 4. Real-Time Discussion Forum for Events
 
 **Location:**
 
@@ -208,9 +202,7 @@ I selected features that **build upon each other** and the existing base feature
 
 ---
 
-### Tier C Features (1 × 2 = 2 Marks)
-
-#### 5. Anonymous Feedback System for Events [2 Marks]
+#### 5. Anonymous Feedback System for Events
 
 **Location:**
 
@@ -306,9 +298,9 @@ npm start
 │       │   ├── eventModel.js
 │       │   ├── registrationModel.js
 │       │   ├── ticketModel.js
-│       │   ├── feedbackModel.js         # [NEW] Feedback
-│       │   ├── discussionModel.js       # [NEW] Discussion
-│       │   └── passwordResetRequestModel.js  # [NEW] Password reset
+│       │   ├── feedbackModel.js         # Feedback
+│       │   ├── discussionModel.js       # Discussion
+│       │   └── passwordResetRequestModel.js  # Password reset
 │       ├── routes/
 │       │   ├── user.js          # Auth routes
 │       │   ├── admin.js         # Admin operations
@@ -317,7 +309,7 @@ npm start
 │       │   └── events.js        # Public event routes
 │       └── utils/
 │           ├── sendTicketEmail.js
-│           └── sendPasswordResetEmail.js  # [NEW]
+│           └── sendPasswordResetEmail.js  # send email for passwordreset
 └── frontend/
     ├── package.json
     └── src/
@@ -334,17 +326,17 @@ npm start
         │   ├── ParticipantDashboard.js
         │   ├── OrganizerDashboard.js
         │   ├── AdminDashboard.js
-        │   ├── QRScanner.js             # [NEW] Attendance
-        │   ├── MerchOrders.js           # [NEW] Payment approval
-        │   ├── EventFeedback.js         # [NEW] Feedback view
-        │   ├── EventDiscussion.js       # [NEW] Real-time chat
-        │   ├── PasswordResetRequests.js # [NEW] Admin reset page
+        │   ├── QRScanner.js             # Attendance
+        │   ├── MerchOrders.js           # Payment approval
+        │   ├── EventFeedback.js         # Feedback view
+        │   ├── EventDiscussion.js       # Real-time chat
+        │   ├── PasswordResetRequests.js # Admin reset page
         │   └── ...
         └── services/
             ├── api.js           # API helper
             ├── storage.js       # localStorage wrapper
             ├── NavBar.js        # Navigation with notifications
-            └── NotificationContext.js  # [NEW] Global notifications
+            └── NotificationContext.js  # Global notifications
 ```
 
 ---
@@ -404,19 +396,6 @@ npm start
 - `reaction-update` - Emitted when reaction is added/removed
 - `message-pinned` - Emitted when message pin status changes
 - `message-deleted` - Emitted when message is deleted
-
----
-
-## Total Marks Breakdown
-
-| Tier      | Feature                                  | Marks  |
-| --------- | ---------------------------------------- | ------ |
-| A         | QR Code Attendance with Manual Overrides | 8      |
-| A         | Merchandise Payment Approval Workflow    | 8      |
-| B         | Organizer Password Reset Workflow        | 6      |
-| B         | Real-Time Discussion Forum               | 6      |
-| C         | Anonymous Feedback System                | 2      |
-| **Total** |                                          | **30** |
 
 ---
 
