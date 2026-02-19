@@ -1,7 +1,6 @@
 const express = require("express");
 const Registration = require("../models/registrationModel");
 const Event = require("../models/eventModel");
-const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 const { authmiddleware, participantmiddleware } = require("../middleware/auth");
 const router = express.Router();
@@ -164,7 +163,13 @@ router.post(
           participantEmail: user.email,
         });
       } catch (emailErr) {
-        console.log("Ticket email failed:", emailErr?.message || emailErr);
+        console.log("Ticket email failed:", {
+          message: emailErr?.message,
+          code: emailErr?.code,
+          response: emailErr?.response,
+          responseCode: emailErr?.responseCode,
+          command: emailErr?.command,
+        });
       }
 
       res
@@ -304,7 +309,13 @@ router.post(
           participantEmail: user.email,
         });
       } catch (emailErr) {
-        console.log("Ticket email failed:", emailErr?.message || emailErr);
+        console.log("Ticket email failed:", {
+          message: emailErr?.message,
+          code: emailErr?.code,
+          response: emailErr?.response,
+          responseCode: emailErr?.responseCode,
+          command: emailErr?.command,
+        });
       }
 
       res.status(201).json({ message: "Purchase successful", ticketId });

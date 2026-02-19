@@ -42,170 +42,170 @@ function App() {
   return (
     <NotificationProvider>
       <Router>
-      <Routes>
-        <Route path="/" element={<RootRedirect />} />
-        <Route path="/signup" element={<SignupFunction />} />
+        <Routes>
+          <Route path="/" element={<RootRedirect />} />
+          <Route path="/signup" element={<SignupFunction />} />
 
-        <Route
-          path="/participant"
-          element={
-            <ProtectedRoute allowedRoles={["participant"]}>
-              <ParticipantDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/events"
-          element={
-            <ProtectedRoute
-              allowedRoles={["participant", "admin", "organizer"]}
-            >
-              <Events />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/events/:id"
-          element={
-            <ProtectedRoute
-              allowedRoles={["participant", "admin", "organizer"]}
-            >
-              <EventDetails />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/tickets/:ticketId"
-          element={
-            <ProtectedRoute allowedRoles={["participant"]}>
-              <TicketDetails />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/organizers"
-          element={
-            <ProtectedRoute allowedRoles={["participant"]}>
-              <Organizers />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/organizers/:id"
-          element={
-            <ProtectedRoute allowedRoles={["participant"]}>
-              <OrganizerDetails />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute
-              allowedRoles={["participant", "organizer", "admin"]}
-            >
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/participant"
+            element={
+              <ProtectedRoute allowedRoles={["participant"]}>
+                <ParticipantDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/events"
+            element={
+              <ProtectedRoute
+                allowedRoles={["participant", "admin", "organizer"]}
+              >
+                <Events />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/events/:id"
+            element={
+              <ProtectedRoute
+                allowedRoles={["participant", "admin", "organizer"]}
+              >
+                <EventDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tickets/:ticketId"
+            element={
+              <ProtectedRoute allowedRoles={["participant"]}>
+                <TicketDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/organizers"
+            element={
+              <ProtectedRoute allowedRoles={["participant"]}>
+                <Organizers />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/organizers/:id"
+            element={
+              <ProtectedRoute allowedRoles={["participant"]}>
+                <OrganizerDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute
+                allowedRoles={["participant", "organizer", "admin"]}
+              >
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/organizer"
-          element={
-            <ProtectedRoute allowedRoles={["admin", "organizer"]}>
-              <OrganizerDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/organizer/create-event"
-          element={
-            <ProtectedRoute allowedRoles={["admin", "organizer"]}>
-              <OrganizerCreateEvent />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/organizer/my-events"
-          element={
-            <ProtectedRoute allowedRoles={["admin", "organizer"]}>
-              <OrganizerMyEvents />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/organizer/event/:id/registrations"
-          element={
-            <ProtectedRoute allowedRoles={["admin", "organizer"]}>
-              <OrganizerEventRegistrations />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/organizer"
+            element={
+              <ProtectedRoute allowedRoles={["admin", "organizer"]}>
+                <OrganizerDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/organizer/create-event"
+            element={
+              <ProtectedRoute allowedRoles={["admin", "organizer"]}>
+                <OrganizerCreateEvent />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/organizer/my-events"
+            element={
+              <ProtectedRoute allowedRoles={["admin", "organizer"]}>
+                <OrganizerMyEvents />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/organizer/event/:id/registrations"
+            element={
+              <ProtectedRoute allowedRoles={["admin", "organizer"]}>
+                <OrganizerEventRegistrations />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/create-organizer"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <AdminCreateOrganizer />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/password-reset-requests"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <PasswordResetRequests />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/create-organizer"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdminCreateOrganizer />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/password-reset-requests"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <PasswordResetRequests />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Advanced Features Routes */}
-        <Route
-          path="/organizer/event/:id/scanner"
-          element={
-            <ProtectedRoute allowedRoles={["admin", "organizer"]}>
-              <QRScanner />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/organizer/merch-orders"
-          element={
-            <ProtectedRoute allowedRoles={["admin", "organizer"]}>
-              <MerchOrders />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/organizer/event/:id/feedback"
-          element={
-            <ProtectedRoute allowedRoles={["admin", "organizer"]}>
-              <EventFeedback />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/events/:id/discussion"
-          element={
-            <ProtectedRoute
-              allowedRoles={["participant", "admin", "organizer"]}
-            >
-              <EventDiscussion />
-            </ProtectedRoute>
-          }
-        />
+          {/* Advanced Features Routes */}
+          <Route
+            path="/organizer/event/:id/scanner"
+            element={
+              <ProtectedRoute allowedRoles={["admin", "organizer"]}>
+                <QRScanner />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/organizer/merch-orders"
+            element={
+              <ProtectedRoute allowedRoles={["admin", "organizer"]}>
+                <MerchOrders />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/organizer/event/:id/feedback"
+            element={
+              <ProtectedRoute allowedRoles={["admin", "organizer"]}>
+                <EventFeedback />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/events/:id/discussion"
+            element={
+              <ProtectedRoute
+                allowedRoles={["participant", "admin", "organizer"]}
+              >
+                <EventDiscussion />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Router>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Router>
     </NotificationProvider>
   );
 }

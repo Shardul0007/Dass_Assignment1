@@ -1066,7 +1066,13 @@ router.patch(
           participantEmail: user.email,
         });
       } catch (emailErr) {
-        console.log("Ticket email failed:", emailErr?.message || emailErr);
+        console.log("Ticket email failed:", {
+          message: emailErr?.message,
+          code: emailErr?.code,
+          response: emailErr?.response,
+          responseCode: emailErr?.responseCode,
+          command: emailErr?.command,
+        });
       }
 
       res.status(200).json({

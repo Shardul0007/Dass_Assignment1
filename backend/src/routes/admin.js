@@ -305,15 +305,13 @@ router.patch(
         });
       }
 
-      res
-        .status(200)
-        .json({
-          message: emailSent
-            ? "Approved and emailed"
-            : "Approved (email failed to send)",
-          password: rawPassword,
-          emailSent,
-        });
+      res.status(200).json({
+        message: emailSent
+          ? "Approved and emailed"
+          : "Approved (email failed to send)",
+        password: rawPassword,
+        emailSent,
+      });
     } catch (err) {
       console.log(err);
       res.status(500).json({ message: "Internal Server Error" });

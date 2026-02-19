@@ -192,7 +192,8 @@ function QRScanner() {
           } else {
             const text = await response.text();
             if (text && text.toLowerCase().includes("cannot get")) {
-              msg = "CSV endpoint not reached. Check REACT_APP_API_BASE (no trailing slash)";
+              msg =
+                "CSV endpoint not reached. Check REACT_APP_API_BASE (no trailing slash)";
             }
           }
         } catch {

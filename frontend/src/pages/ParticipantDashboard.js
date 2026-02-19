@@ -95,7 +95,12 @@ function ParticipantDashboard() {
   const getDisplayStatus = (r) => {
     const e = r.event || {};
     const status = String(r.status || "").toLowerCase();
-    if (status === "completed" || status === "cancelled" || status === "rejected" || status === "pending_approval") {
+    if (
+      status === "completed" ||
+      status === "cancelled" ||
+      status === "rejected" ||
+      status === "pending_approval"
+    ) {
       return status;
     }
     // If event is closed or end_date passed, show as completed

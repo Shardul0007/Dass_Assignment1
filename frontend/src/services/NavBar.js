@@ -5,7 +5,8 @@ import { useNotifications } from "./NotificationContext";
 
 function Navbar() {
   const role = localStorage.getItem("role");
-  const { notifications, unreadCount, markAllRead, clearNotifications } = useNotifications() || {};
+  const { notifications, unreadCount, markAllRead, clearNotifications } =
+    useNotifications() || {};
   const [showNotifications, setShowNotifications] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -50,10 +51,11 @@ function Navbar() {
           <Link to="/participant">Dashboard</Link> |{" "}
           <Link to="/events">Browse Events</Link> |{" "}
           <Link to="/organizers">Clubs / Organizers</Link> |{" "}
-          <Link to="/profile">Profile</Link> |{" "}
-          
-          {/* Notification Bell */}
-          <div ref={dropdownRef} style={{ position: "relative", display: "inline-block" }}>
+          <Link to="/profile">Profile</Link> | {/* Notification Bell */}
+          <div
+            ref={dropdownRef}
+            style={{ position: "relative", display: "inline-block" }}
+          >
             <button
               onClick={toggleNotifications}
               style={{
@@ -133,7 +135,13 @@ function Navbar() {
                 </div>
 
                 {!notifications || notifications.length === 0 ? (
-                  <div style={{ padding: "20px", textAlign: "center", color: "#888" }}>
+                  <div
+                    style={{
+                      padding: "20px",
+                      textAlign: "center",
+                      color: "#888",
+                    }}
+                  >
                     No notifications yet
                   </div>
                 ) : (
@@ -151,15 +159,32 @@ function Navbar() {
                         background: notif.read ? "white" : "#f0f7ff",
                       }}
                     >
-                      <div style={{ fontSize: "13px", fontWeight: notif.read ? "normal" : "bold" }}>
+                      <div
+                        style={{
+                          fontSize: "13px",
+                          fontWeight: notif.read ? "normal" : "bold",
+                        }}
+                      >
                         {notif.message}
                       </div>
                       {notif.preview && (
-                        <div style={{ fontSize: "12px", color: "#666", marginTop: "4px" }}>
+                        <div
+                          style={{
+                            fontSize: "12px",
+                            color: "#666",
+                            marginTop: "4px",
+                          }}
+                        >
                           {notif.preview}
                         </div>
                       )}
-                      <div style={{ fontSize: "11px", color: "#999", marginTop: "4px" }}>
+                      <div
+                        style={{
+                          fontSize: "11px",
+                          color: "#999",
+                          marginTop: "4px",
+                        }}
+                      >
                         {formatTime(notif.timestamp)}
                       </div>
                     </Link>
@@ -167,8 +192,8 @@ function Navbar() {
                 )}
               </div>
             )}
-          </div>
-          {" "}|{" "}
+          </div>{" "}
+          |{" "}
         </>
       )}
 

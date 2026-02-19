@@ -12,7 +12,7 @@ db.once("open", () => console.log("database connected"));
 
 const app = express();
 const server = http.createServer(app);
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3500;
 
 // Log email provider configuration (no secrets)
 console.log("Email config:", {
@@ -86,7 +86,7 @@ app.get("/api/version", (req, res) => {
     email: {
       smtpConfigured: Boolean(
         (process.env.SMTP_USER || process.env.EMAIL_USER) &&
-          (process.env.SMTP_PASS || process.env.EMAIL_PASS),
+        (process.env.SMTP_PASS || process.env.EMAIL_PASS),
       ),
       resendConfigured: Boolean(process.env.RESEND_API_KEY),
       resendFrom: process.env.RESEND_FROM || null,

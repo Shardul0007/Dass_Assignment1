@@ -4,12 +4,7 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const PasswordResetRequest = require("../models/passwordResetRequestModel");
-const {
-  authmiddleware,
-  adminmiddleware,
-  organizermiddleware,
-  participantmiddleware,
-} = require("../middleware/auth");
+const { authmiddleware, participantmiddleware } = require("../middleware/auth");
 
 router.get("/", authmiddleware, (req, res) => {
   res.send("hello world");
@@ -32,8 +27,6 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid Credentials" });
     } else {
       const compare = await bcrypt.compare(password, existinguser.password);
-      console.log(existinguser);
-      console.log(compare);
       if (!compare) {
         return res.status(400).json({ message: "Invalid Credentials" });
       }
@@ -126,12 +119,10 @@ router.post("/forgot-password", async (req, res) => {
     const organizer = await User.findOne({ email, role: "organizer" });
     if (!organizer) {
       // Don't reveal if email exists - return generic message
-      return res
-        .status(200)
-        .json({
-          message:
-            "If this email belongs to an organizer account, admin will receive your request.",
-        });
+      return res.status(200).json({
+        message:
+          "If this email belongs to an organizer account, admin will receive your request.",
+      });
     }
 
     if (organizer.is_disabled) {
@@ -147,12 +138,10 @@ router.post("/forgot-password", async (req, res) => {
     });
 
     if (existing) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "A password reset request is already pending for this account.",
-        });
+      return res.status(400).json({
+        message:
+          "A password reset request is already pending for this account.",
+      });
     }
 
     // Create new password reset request
@@ -162,12 +151,10 @@ router.post("/forgot-password", async (req, res) => {
     });
     await request.save();
 
-    res
-      .status(200)
-      .json({
-        message:
-          "Password reset request sent to admin. You will receive an email once approved.",
-      });
+    res.status(200).json({
+      message:
+        "Password reset request sent to admin. You will receive an email once approved.",
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal server error" });
@@ -198,7 +185,7 @@ router.put(
       const updatedData = await User.findByIdAndUpdate(
         req.user.userId,
         { $set: updatedfields },
-        { $new: true },
+        { new: true },
       );
       res.status(200).json({
         message: "Preferences updated successfully",

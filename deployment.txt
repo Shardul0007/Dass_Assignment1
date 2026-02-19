@@ -1,108 +1,143 @@
-Deployment Info (fill these after deployment)
+Deployment.txt (Final)
 
 Frontend URL:
-- <PASTE_DEPLOYED_FRONTEND_URL_HERE>
+- https://dass-frontend.onrender.com/
 
 Backend URL:
-- <PASTE_DEPLOYED_BACKEND_URL_HERE>
+- https://dass-backend.onrender.com/
 
 ================================================================================
-HOW TO DEPLOY
+RECOMMENDED DEPLOYMENT: Render (Frontend + Backend)
 ================================================================================
 
-OPTION 1: Render.com (Recommended - Free Tier Available)
---------------------------------------------------------
+Project structure (repo root)
+- 2024101077/backend  (Node/Express API + Socket.IO)
+- 2024101077/frontend (React app)
 
-Backend Deployment:
-1. Go to https://render.com and sign up/login
-2. Click "New" → "Web Service"
-3. Connect your GitHub repo (or use "Public Git repository")
-4. Configure:
-   - Name: event-management-backend
-   - Root Directory: backend (or 2024101077/backend)
-   - Runtime: Node
-   - Build Command: npm install
-   - Start Command: npm start
-5. Add Environment Variables:
-   - MONGO_URL: your MongoDB Atlas connection string
-   - JWT_SECRET: your secret key
-   - PORT: 10000 (Render's default)
-   - EMAIL_USER: your Gmail address
-   - EMAIL_PASS: your Gmail app password
-6. Click "Create Web Service"
-7. Copy the URL (e.g., https://your-backend.onrender.com)
+Prerequisites
+1) MongoDB Atlas cluster + user
+2) GitHub repo containing this project
+3) (Recommended) Resend account for email sending in production
 
-Frontend Deployment:
-1. Update frontend/src/services/api.js to use deployed backend URL
-   OR set REACT_APP_API_BASE environment variable
-2. Click "New" → "Static Site"
-3. Configure:
-   - Name: event-management-frontend
-   - Root Directory: frontend (or 2024101077/frontend)
-   - Build Command: npm install && npm run build
-   - Publish Directory: build
-4. Add Environment Variable:
-   - REACT_APP_API_BASE: https://your-backend.onrender.com
-5. Click "Create Static Site"
-6. Copy the URL (e.g., https://your-frontend.onrender.com)
+----------------------------------------
+Backend (Render Web Service)
+----------------------------------------
+1) Render Dashboard → New → Web Service
+2) Connect the GitHub repository
+3) Configuration:
+	- Name: dass-backend (any name is fine)
+	- Root Directory: 2024101077/backend
+	- Runtime: Node
+	- Build Command: npm install
+	- Start Command: npm start
 
---------------------------------------------------------
+4) Environment variables (Render → Backend Service → Environment)
 
-OPTION 2: Vercel (Frontend) + Render (Backend)
-----------------------------------------------
+	Required
+	- MONGO_URL = <MongoDB Atlas connection string>
+	- JWT_SECRET = <any long random secret>
+	- CORS_ORIGINS = <comma-separated list of allowed frontend origins>
+	  Example:
+		 https://dass-frontend.onrender.com, http://localhost:3000
 
-Backend: Same as Option 1
+	Email (important note)
+	- Many hosts (including Render) block outbound Gmail SMTP causing ETIMEDOUT.
+	- This project supports sending email via Resend (HTTPS) and will fall back to it.
 
-Frontend on Vercel:
-1. Go to https://vercel.com
-2. Import your GitHub repo
-3. Configure:
-   - Framework Preset: Create React App
-   - Root Directory: frontend
-   - Build Command: npm run build
-   - Output Directory: build
-4. Add Environment Variable:
-   - REACT_APP_API_BASE: https://your-backend.onrender.com
-5. Deploy
+	Recommended (Resend)
+	- RESEND_API_KEY = <Resend API key>
+	- RESEND_FROM = <Resend-verified sender address>
+	  Example (testing, if allowed): onboarding@resend.dev
 
---------------------------------------------------------
+	Optional (SMTP; may fail on Render due to outbound network restrictions)
+	- EMAIL_USER = <gmail address>
+	- EMAIL_PASS = <gmail app password>
+	(Advanced optional overrides)
+	- SMTP_HOST (default: smtp.gmail.com)
+	- SMTP_PORT (default: 587)
 
-OPTION 3: Railway.app (Both in one place)
------------------------------------------
+5) Deploy. Copy the Backend URL (Render will show it).
 
-1. Go to https://railway.app
-2. Create new project
-3. Add "New Service" → "GitHub Repo"
-4. For backend:
-   - Set Root Directory: backend
-   - Add environment variables
-5. For frontend:
-   - Set Root Directory: frontend
-   - Set REACT_APP_API_BASE to backend URL
+Backend verification
+1) Open: https://dass-backend.onrender.com/api/version
+2) Confirm it returns JSON (service running).
+3) Confirm email config booleans match your setup:
+	- email.resendConfigured should be true if using Resend
 
---------------------------------------------------------
+----------------------------------------
+Frontend (Render Static Site)
+----------------------------------------
+1) Render Dashboard → New → Static Site
+2) Connect the same GitHub repository
+3) Configuration:
+	- Name: dass-frontend (any name is fine)
+	- Root Directory: 2024101077/frontend
+	- Build Command: npm install && npm run build
+	- Publish Directory: build
 
-IMPORTANT NOTES:
-- Get a free MongoDB Atlas cluster at https://www.mongodb.com/atlas
-- Gmail App Password: Go to Google Account → Security → App passwords
-- Free tiers may sleep after inactivity (first request takes ~30s)
-- Update CORS in backend if needed for your frontend domain
+4) Environment variables (Render → Frontend Static Site → Environment)
+	- REACT_APP_API_BASE = https://dass-backend.onrender.com
+
+5) Deploy. Copy the Frontend URL.
+
+----------------------------------------
+Post-deploy checks
+----------------------------------------
+1) Open frontend URL and login
+2) Register for an event
+3) Check backend logs:
+	- If SMTP is blocked you may see: "SMTP send failed ... ETIMEDOUT"
+	- If Resend is configured you should see:
+	  - "Falling back to Resend due to SMTP timeout"
+	  - "Resend email sent: { id: ... }"
+4) Check inbox: ticket email should arrive
+	- When sent via Resend, QR is included as attachment: ticket-qr.png
 
 ================================================================================
+TROUBLESHOOTING
+================================================================================
 
-Notes
-- Frontend reads backend base URL from `REACT_APP_API_BASE`.
-- Backend expects env: `MONGO_URL`, `PORT`, `JWT_SECRET` (and email vars if using email).
+1) CORS errors in browser
+- Ensure backend env CORS_ORIGINS includes the exact frontend URL.
+- Ensure frontend env REACT_APP_API_BASE points to the backend URL.
 
-Local run
-1) Backend
-	- cd backend
-	- npm install
-	- set env vars in a .env file
-	- npm start
+2) Real-time discussion / notifications not working
+- Ensure REACT_APP_API_BASE is set to the deployed backend.
+- Ensure both are on HTTPS in production.
 
-2) Frontend
-	- cd frontend
-	- npm install
-	- set `REACT_APP_API_BASE=http://localhost:<backendPort>`
-	- npm start
+3) Email not received
+- If backend logs show ETIMEDOUT to smtp.gmail.com, Gmail SMTP is blocked.
+- Configure Resend env vars:
+  - RESEND_API_KEY
+  - RESEND_FROM
+- Then redeploy/restart the backend and re-test.
+
+4) Render free tier sleeping
+- First request after inactivity can take ~30 seconds.
+
+================================================================================
+LOCAL RUN (development)
+================================================================================
+
+Backend
+1) cd 2024101077/backend
+2) npm install
+3) Create a local .env (DO NOT COMMIT) with:
+	- MONGO_URL=...
+	- JWT_SECRET=...
+	- PORT=3500
+	- CORS_ORIGINS=http://localhost:3000
+	Optional email:
+	- EMAIL_USER=...
+	- EMAIL_PASS=...
+	or Resend:
+	- RESEND_API_KEY=...
+	- RESEND_FROM=...
+4) npm start
+
+Frontend
+1) cd 2024101077/frontend
+2) npm install
+3) Create a local .env (DO NOT COMMIT) with:
+	- REACT_APP_API_BASE=http://localhost:3500
+4) npm start

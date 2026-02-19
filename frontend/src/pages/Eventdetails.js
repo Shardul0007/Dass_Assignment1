@@ -65,14 +65,18 @@ function EventDetails() {
               "api/participant/my-registrations",
               "GET",
             );
-            foundRegistration = regs.find((r) => r.event?._id === id || r.event === id);
+            foundRegistration = regs.find(
+              (r) => r.event?._id === id || r.event === id,
+            );
             setRegistration(foundRegistration);
             // User is registered if they have ANY registration (regardless of status)
             setIsRegistered(!!foundRegistration);
           } catch {
             // Fallback to my-events if my-registrations fails
             const my = await api_requests("api/participant/my-events", "GET");
-            const ids = new Set((Array.isArray(my) ? my : []).map((e) => e._id));
+            const ids = new Set(
+              (Array.isArray(my) ? my : []).map((e) => e._id),
+            );
             setIsRegistered(ids.has(id));
           }
 
