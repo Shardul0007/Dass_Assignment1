@@ -4,11 +4,31 @@ dotenv.config();
 const mongoose = require("mongoose");
 const http = require("http");
 const { Server } = require("socket.io");
+const bcrypt = require("bcryptjs");
 
 mongoose.connect(process.env.MONGO_URL);
 const db = mongoose.connection;
 db.on("error", (error) => console.log(error));
-db.once("open", () => console.log("database connected"));
+db.once("open", async () => {
+  console.log("database connected");
+
+  // Seed the default admin account if it doesn't exist yet
+  try {
+    const User = require("./src/models/userModel");
+    const existing = await User.findOne({ role: "admin" });
+    if (!existing) {
+      const hashedPassword = await bcrypt.hash("admin123", 10);
+      await User.create({
+        email: "admin@admin.com",
+        password: hashedPassword,
+        role: "admin",
+      });
+      console.log("Default admin account created (admin@admin.com / admin123)");
+    }
+  } catch (err) {
+    console.log("Admin seed check failed:", err.message);
+  }
+});
 
 const app = express();
 const server = http.createServer(app);

@@ -200,7 +200,7 @@ function Navbar() {
       {role === "organizer" && (
         <>
           <Link to="/organizer">Dashboard</Link> |{" "}
-          <Link to="/organizer/my-events">My Events</Link> |{" "}
+          <Link to="/organizer/my-events">Ongoing Events</Link> |{" "}
           <Link to="/organizer/create-event">Create Event</Link> |{" "}
           <Link to="/organizer/merch-orders">Merch Orders</Link> |{" "}
           <Link to="/profile">Profile</Link> |{" "}

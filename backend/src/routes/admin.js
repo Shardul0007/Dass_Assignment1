@@ -1,4 +1,5 @@
 const express = require("express");
+const crypto = require("crypto");
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const { authmiddleware, adminmiddleware } = require("../middleware/auth");
@@ -35,8 +36,11 @@ router.post(
         return res.status(400).json({ message: "Invalid email format" });
       }
 
-      // Auto-generate password (10 characters)
-      const rawPassword = Math.random().toString(36).slice(-10);
+      // Auto-generate a secure random password (10 characters)
+      const rawPassword = crypto
+        .randomBytes(8)
+        .toString("base64url")
+        .slice(0, 10);
       const hashedPassword = await bcrypt.hash(rawPassword, 10);
 
       const unique = await User.findOne({ email });
@@ -272,7 +276,10 @@ router.patch(
         return res.status(400).json({ message: "Request already handled" });
       }
 
-      const rawPassword = Math.random().toString(36).slice(-10);
+      const rawPassword = crypto
+        .randomBytes(8)
+        .toString("base64url")
+        .slice(0, 10);
       const hashedPassword = await bcrypt.hash(rawPassword, 10);
 
       await User.findByIdAndUpdate(request.organizer._id, {
